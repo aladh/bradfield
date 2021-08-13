@@ -11,7 +11,7 @@ void writelines(char *lineptr[], int nlines);
 
 void qsort(char *lineptr[], int left, int right);
 
-int main() { // FIXME: Getting a segfault
+int main() {
     int nlines; // number of input lines read
 
     if ((nlines = readlines(lineptr, MAXLINES)) >= 0) {
@@ -91,7 +91,7 @@ void qsort(char *v[], int left, int right) {
 
     swap(v, left, last);
     qsort(v, left, last - 1);
-    qsort(v, last - 1, right);
+    qsort(v, last + 1, right);
 }
 
 void swap(char *v[], int i, int j) {
