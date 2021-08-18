@@ -2,50 +2,52 @@
 
 int main(int argc, char *argv[]) {
     if (argc == 1) { // default: current directory
-        dirwalk(".", print_entry);
+        traverse_dir(".", print_entry);
     } else {
         while (--argc > 0) {
-            dirwalk(*++argv, print_entry);
+            traverse_dir(*++argv, print_entry);
         }
     }
 
     return 0;
 }
 
-void print_entry(char *dirname, char *filename) {
-    char path[PATH_MAX];
-    sprintf(path, "%s/%s", dirname, filename);
+void print_entry(char *dir_path, char *filename) {
+    char file_path[PATH_MAX];
+    sprintf(file_path, "%s/%s", dir_path, filename);
 
-    printf("%8ld %s\n", fsize(path), filename);
+    printf("%8ld %s\n", file_size(file_path), filename);
 }
 
-off_t fsize(char *name) {
-    struct stat stbuf;
+off_t file_size(char *file_path) {
+    struct stat stat_buf;
 
-    if (stat(name, &stbuf) == -1) {
-        fprintf(stderr, "%s: can't access %s\n", PROGRAM_NAME, name);
+    if (stat(file_path, &stat_buf) == -1) {
+        fprintf(stderr, "%s: can't access %s\n", PROGRAM_NAME, file_path);
         return -1;
     }
 
-    return stbuf.st_size;
+    return stat_buf.st_size;
 }
 
-void dirwalk(char *dir, void (*fcn)(char *, char *)) {
-    struct dirent *dp;
-    DIR *dfd;
+void traverse_dir(char *path, void (*func)(char *, char *)) {
+    struct dirent *dir_entry;
+    DIR *dir_fd;
 
-    if ((dfd = opendir(dir)) == NULL) {
-        fprintf(stderr, "%s: can't open %s\n", PROGRAM_NAME, dir);
+    if ((dir_fd = opendir(path)) == NULL) {
+        fprintf(stderr, "%s: can't open %s\n", PROGRAM_NAME, path);
         return;
     }
 
-    while ((dp = readdir(dfd)) != NULL) {
-        if (strcmp(dp->d_name, ".") == 0 || strcmp(dp->d_name, "..") == 0) {
+    while ((dir_entry = readdir(dir_fd)) != NULL) {
+        char *filename = dir_entry->d_name;
+
+        if (strcmp(filename, ".") == 0 || strcmp(filename, "..") == 0) {
             continue; // skip self and parent
         }
 
-        (*fcn)(dir, dp->d_name);
+        (*func)(path, filename);
     }
 
-    closedir(dfd);
+    closedir(dir_fd);
 }

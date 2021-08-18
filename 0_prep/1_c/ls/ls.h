@@ -7,6 +7,6 @@
 
 #define PROGRAM_NAME "ls"
 
-off_t fsize(char *);
-void dirwalk(char *, void (*fcn)(char *, char *));
+off_t file_size(char *);
+void traverse_dir(char *, void (*fcn)(char *, char *));
 void print_entry(char *, char *);
