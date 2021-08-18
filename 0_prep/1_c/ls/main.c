@@ -13,7 +13,7 @@ int main(int argc, char *argv[]) {
 }
 
 void print_entry(char *dirname, char *filename) {
-    char *path;
+    char path[PATH_MAX];
     sprintf(path, "%s/%s", dirname, filename);
 
     printf("%8ld %s\n", fsize(path), filename);
