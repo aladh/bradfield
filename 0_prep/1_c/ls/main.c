@@ -1,4 +1,15 @@
-#include "ls.h"
+#include <fcntl.h>
+#include <linux/limits.h>
+#include <stdio.h>
+#include <string.h>
+#include <sys/dir.h>
+#include <sys/stat.h>
+
+#define PROGRAM_NAME "ls"
+
+off_t file_size(char *);
+void print_entry(char *, char *);
+void traverse_dir(char *, void (*func)(char *, char *));
 
 int main(int argc, char *argv[]) {
     if (argc == 1) { // default: current directory
