@@ -23,7 +23,7 @@ off_t fsize(char *name) {
     struct stat stbuf;
 
     if (stat(name, &stbuf) == -1) {
-        fprintf(stderr, "fsize: can't access %s\n", name);
+        fprintf(stderr, "%s: can't access %s\n", PROGRAM_NAME, name);
         return -1;
     }
 
@@ -35,7 +35,7 @@ void dirwalk(char *dir, void (*fcn)(char *, char *)) {
     DIR *dfd;
 
     if ((dfd = opendir(dir)) == NULL) {
-        fprintf(stderr, "dirwalk: can't open %s\n", dir);
+        fprintf(stderr, "%s: can't open %s\n", PROGRAM_NAME, dir);
         return;
     }
 
@@ -44,11 +44,7 @@ void dirwalk(char *dir, void (*fcn)(char *, char *)) {
             continue; // skip self and parent
         }
 
-        if (strlen(dir) + strlen(dp->d_name) + 2 > PATH_MAX) {
-            fprintf(stderr, "dirwalk: name %s/%s too long\n", dir, dp->d_name);
-        } else {
-            (*fcn)(dir, dp->d_name);
-        }
+        (*fcn)(dir, dp->d_name);
     }
 
     closedir(dfd);
