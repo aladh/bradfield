@@ -12,7 +12,7 @@ const filename = "info.0.json"
 const notFound = 404
 
 func Fetch(skip func(int) bool, store func(int, io.Reader) error) error {
-	for i := 2400; true; i++ {
+	for i := 1; true; i++ {
 		log.Printf("fetching comic %d\n", i)
 
 		if skip(i) {
@@ -25,7 +25,7 @@ func Fetch(skip func(int) bool, store func(int, io.Reader) error) error {
 			return fmt.Errorf("error making request for comic %d: %w", i, err)
 		}
 
-		if resp.StatusCode == notFound {
+		if resp.StatusCode == notFound && i != notFound { // comic 404 does not exist
 			log.Printf("comic %d not found - stopped fetching\n", i)
 			break
 		}
