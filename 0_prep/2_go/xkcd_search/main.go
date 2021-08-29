@@ -1,13 +1,23 @@
 package main
 
 import (
+	"fmt"
+	"os"
+
 	"github.com/aladh/bradfield/0_prep/2_go/xkcd_search/index"
-	"log"
 )
 
 func main() {
-	err := index.Create()
+	// Assume index already exists
+	//err := index.Create()
+	//if err != nil {
+	//	log.Fatalln(err)
+	//}
+
+	results, err := index.Search(os.Args[1])
 	if err != nil {
-		log.Fatalln(err)
+		fmt.Printf("error searching for %s: %s\n", os.Args[1], err)
 	}
+
+	fmt.Println(results)
 }
