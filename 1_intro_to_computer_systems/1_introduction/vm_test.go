@@ -123,6 +123,42 @@ halt`,
 	},
 }
 
+var memoryProtectionTests = []vmTest{
+	// Prevents instructions from being overwritten
+	{
+		name: "No memory protection when writing to data",
+		asm: `
+load r1 1
+store r1 2
+halt`,
+		cases: []vmCase{{42, 0, 0}},
+	},
+	{
+		name: "No memory protection when writing to data",
+		asm: `
+load r1 1
+store r1 7
+halt`,
+		cases: []vmCase{{42, 0, 0}},
+	},
+	{
+		name: "Memory protection when writing to instructions",
+		asm: `
+load r1 1
+store r1 8
+halt`,
+		cases: []vmCase{{42, 0, 0}},
+	},
+	{
+		name: "Memory protection when writing to instructions",
+		asm: `
+load r1 1
+store r1 200
+halt`,
+		cases: []vmCase{{42, 0, 0}},
+	},
+}
+
 func TestCompute(t *testing.T) {
 	for _, test := range mainTests {
 		t.Run(test.name, func(t *testing.T) { testCompute(t, test) })
@@ -132,6 +168,10 @@ func TestCompute(t *testing.T) {
 	} else {
 		for _, test := range stretchGoalTests {
 			t.Run(test.name, func(t *testing.T) { testCompute(t, test) })
+		}
+
+		for _, test := range memoryProtectionTests {
+			t.Run(test.name, func(t *testing.T) { testMemoryProtection(t, test) })
 		}
 	}
 }
@@ -157,6 +197,29 @@ func testCompute(t *testing.T, test vmTest) {
 
 		memory[1] = 0
 		memory[2] = 0
+	}
+}
+
+func testMemoryProtection(t *testing.T, test vmTest) {
+	// for each case, set inputs and run vm
+	for _, c := range test.cases {
+		// assemble code and load into memory
+		memory := make([]byte, 256)
+		instructions := make([]byte, 248)
+		copy(instructions, assemble(test.asm))
+		copy(memory[8:], instructions)
+
+		memory[1] = c.x
+		memory[2] = c.y
+
+		compute(memory)
+
+		// check that instructions portion of memory remains unchanged
+		for i, actual := range memory[8:] {
+			if actual != instructions[i] {
+				t.Fatalf("Expected memory[%d] to be %d, not %d", i, instructions[i], actual)
+			}
+		}
 	}
 }
 

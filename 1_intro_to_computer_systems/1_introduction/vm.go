@@ -50,7 +50,10 @@ func compute(memory []byte) {
 
 			registers[ProgramCounter] += 3
 
-			memory[addr] = registers[r1]
+			// Only allow writing to data, prevent writing instructions
+			if addr < 8 {
+				memory[addr] = registers[r1]
+			}
 		case Add:
 			r1 := memory[pc+1]
 			r2 := memory[pc+2]
