@@ -65,6 +65,33 @@ func compute(memory []byte) {
 			registers[ProgramCounter] += 3
 
 			registers[r1] = registers[r1] - registers[r2]
+		case Addi:
+			r1 := memory[pc+1]
+			val := memory[pc+2]
+
+			registers[ProgramCounter] += 3
+
+			registers[r1] += val
+		case Subi:
+			r1 := memory[pc+1]
+			val := memory[pc+2]
+
+			registers[ProgramCounter] += 3
+
+			registers[r1] -= val
+		case Jump:
+			addr := memory[pc+1]
+
+			registers[ProgramCounter] = addr
+		case Beqz:
+			r1 := memory[pc+1]
+			offset := memory[pc+2]
+
+			registers[ProgramCounter] += 3
+
+			if registers[r1] == 0 {
+				registers[ProgramCounter] += offset
+			}
 		case Halt:
 			registers[ProgramCounter] += 1
 			return
