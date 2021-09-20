@@ -1,5 +1,7 @@
 package __introduction
 
+import "fmt"
+
 const (
 	Load  = 0x01 // load    r1  addr    # Load value at given address into given register
 	Store = 0x02 // store   r2  addr    # Store the value in register at the given memory address
@@ -91,6 +93,8 @@ func compute(memory []byte) {
 		case Halt:
 			registers[ProgramCounter] += 1
 			return
+		default:
+			panic(fmt.Sprintf("unknown instruction %x", op))
 		}
 	}
 }
