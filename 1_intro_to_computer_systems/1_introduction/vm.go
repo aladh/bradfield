@@ -60,14 +60,14 @@ func compute(memory []byte) {
 
 			registers[ProgramCounter] += 3
 
-			registers[r1] = registers[r1] + registers[r2]
+			registers[r1] += registers[r2]
 		case Sub:
 			r1 := memory[pc+1]
 			r2 := memory[pc+2]
 
 			registers[ProgramCounter] += 3
 
-			registers[r1] = registers[r1] - registers[r2]
+			registers[r1] -= registers[r2]
 		case Addi:
 			r1 := memory[pc+1]
 			val := memory[pc+2]
