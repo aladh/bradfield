@@ -43,42 +43,42 @@ func compute(memory []byte) {
 		case Load:
 			r1, addr := memory[pc+1], memory[pc+2]
 
-			registers[PcAddr] += 3
-
 			registers[r1] = memory[addr]
+
+			registers[PcAddr] += 3
 		case Store:
 			r1, addr := memory[pc+1], memory[pc+2]
-
-			registers[PcAddr] += 3
 
 			// Only allow writing to data, prevent writing instructions
 			if addr < 8 {
 				memory[addr] = registers[r1]
 			}
+
+			registers[PcAddr] += 3
 		case Add:
 			r1, r2 := memory[pc+1], memory[pc+2]
 
-			registers[PcAddr] += 3
-
 			registers[r1] += registers[r2]
+
+			registers[PcAddr] += 3
 		case Sub:
 			r1, r2 := memory[pc+1], memory[pc+2]
 
-			registers[PcAddr] += 3
-
 			registers[r1] -= registers[r2]
+
+			registers[PcAddr] += 3
 		case Addi:
 			r1, val := memory[pc+1], memory[pc+2]
 
-			registers[PcAddr] += 3
-
 			registers[r1] += val
+
+			registers[PcAddr] += 3
 		case Subi:
 			r1, val := memory[pc+1], memory[pc+2]
 
-			registers[PcAddr] += 3
-
 			registers[r1] -= val
+
+			registers[PcAddr] += 3
 		case Jump:
 			addr := memory[pc+1]
 
@@ -86,13 +86,12 @@ func compute(memory []byte) {
 		case Beqz:
 			r1, offset := memory[pc+1], memory[pc+2]
 
-			registers[PcAddr] += 3
-
 			if registers[r1] == 0 {
 				registers[PcAddr] += offset
 			}
+
+			registers[PcAddr] += 3
 		case Halt:
-			registers[PcAddr] += 1
 			return
 		default:
 			panic(fmt.Sprintf("unknown instruction %x", op))
