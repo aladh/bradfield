@@ -1,10 +1,10 @@
 package __introduction
 
 const (
-	Load  = 0x01
-	Store = 0x02
-	Add   = 0x03
-	Sub   = 0x04
+	Load  = 0x01 // load    r1  addr    # Load value at given address into given register
+	Store = 0x02 // store   r2  addr    # Store the value in register at the given memory address
+	Add   = 0x03 // add     r1  r2      # Set r1 = r1 + r2
+	Sub   = 0x04 // sub     r1  r2      # Set r1 = r1 - r2
 	Halt  = 0xff
 )
 
@@ -16,6 +16,8 @@ const (
 	Beqz = 0x08
 )
 
+const ProgramCounter = 0
+
 // Given a 256 byte array of "memory", run the stored program
 // to completion, modifying the data in place to reflect the result
 //
@@ -26,18 +28,46 @@ const (
 // ^==DATA===============^ ^==INSTRUCTIONS==============^
 //
 func compute(memory []byte) {
-
 	registers := [3]byte{8, 0, 0} // PC, R1 and R2
 
 	// Keep looping, like a physical computer's clock
 	for {
+		pc := registers[ProgramCounter]
+		op := memory[pc]
 
-		// op := TODO // fetch the opcode
+		// decode and execute
+		switch op {
+		case Load:
+			r1 := memory[pc+1]
+			addr := memory[pc+2]
 
-		// // decode and execute
-		// switch op {
-		// case Load:
-		//   TODO
-		// ...
+			registers[ProgramCounter] += 3
+
+			registers[r1] = memory[addr]
+		case Store:
+			r1 := memory[pc+1]
+			addr := memory[pc+2]
+
+			registers[ProgramCounter] += 3
+
+			memory[addr] = registers[r1]
+		case Add:
+			r1 := memory[pc+1]
+			r2 := memory[pc+2]
+
+			registers[ProgramCounter] += 3
+
+			registers[r1] = registers[r1] + registers[r2]
+		case Sub:
+			r1 := memory[pc+1]
+			r2 := memory[pc+2]
+
+			registers[ProgramCounter] += 3
+
+			registers[r1] = registers[r1] - registers[r2]
+		case Halt:
+			registers[ProgramCounter] += 1
+			return
+		}
 	}
 }
