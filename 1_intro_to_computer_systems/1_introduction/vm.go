@@ -18,7 +18,8 @@ const (
 	Beqz = 0x08
 )
 
-const ProgramCounter = 0
+// Address of program counter
+const PcAddr = 0x00
 
 // Given a 256 byte array of "memory", run the stored program
 // to completion, modifying the data in place to reflect the result
@@ -34,7 +35,7 @@ func compute(memory []byte) {
 
 	// Keep looping, like a physical computer's clock
 	for {
-		pc := registers[ProgramCounter]
+		pc := registers[PcAddr]
 		op := memory[pc]
 
 		// decode and execute
@@ -42,13 +43,13 @@ func compute(memory []byte) {
 		case Load:
 			r1, addr := memory[pc+1], memory[pc+2]
 
-			registers[ProgramCounter] += 3
+			registers[PcAddr] += 3
 
 			registers[r1] = memory[addr]
 		case Store:
 			r1, addr := memory[pc+1], memory[pc+2]
 
-			registers[ProgramCounter] += 3
+			registers[PcAddr] += 3
 
 			// Only allow writing to data, prevent writing instructions
 			if addr < 8 {
@@ -57,41 +58,41 @@ func compute(memory []byte) {
 		case Add:
 			r1, r2 := memory[pc+1], memory[pc+2]
 
-			registers[ProgramCounter] += 3
+			registers[PcAddr] += 3
 
 			registers[r1] += registers[r2]
 		case Sub:
 			r1, r2 := memory[pc+1], memory[pc+2]
 
-			registers[ProgramCounter] += 3
+			registers[PcAddr] += 3
 
 			registers[r1] -= registers[r2]
 		case Addi:
 			r1, val := memory[pc+1], memory[pc+2]
 
-			registers[ProgramCounter] += 3
+			registers[PcAddr] += 3
 
 			registers[r1] += val
 		case Subi:
 			r1, val := memory[pc+1], memory[pc+2]
 
-			registers[ProgramCounter] += 3
+			registers[PcAddr] += 3
 
 			registers[r1] -= val
 		case Jump:
 			addr := memory[pc+1]
 
-			registers[ProgramCounter] = addr
+			registers[PcAddr] = addr
 		case Beqz:
 			r1, offset := memory[pc+1], memory[pc+2]
 
-			registers[ProgramCounter] += 3
+			registers[PcAddr] += 3
 
 			if registers[r1] == 0 {
-				registers[ProgramCounter] += offset
+				registers[PcAddr] += offset
 			}
 		case Halt:
-			registers[ProgramCounter] += 1
+			registers[PcAddr] += 1
 			return
 		default:
 			panic(fmt.Sprintf("unknown instruction %x", op))
