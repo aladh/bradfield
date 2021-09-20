@@ -38,15 +38,13 @@ func compute(memory []byte) {
 		// decode and execute
 		switch op {
 		case Load:
-			r1 := memory[pc+1]
-			addr := memory[pc+2]
+			r1, addr := memory[pc+1], memory[pc+2]
 
 			registers[ProgramCounter] += 3
 
 			registers[r1] = memory[addr]
 		case Store:
-			r1 := memory[pc+1]
-			addr := memory[pc+2]
+			r1, addr := memory[pc+1], memory[pc+2]
 
 			registers[ProgramCounter] += 3
 
@@ -55,29 +53,25 @@ func compute(memory []byte) {
 				memory[addr] = registers[r1]
 			}
 		case Add:
-			r1 := memory[pc+1]
-			r2 := memory[pc+2]
+			r1, r2 := memory[pc+1], memory[pc+2]
 
 			registers[ProgramCounter] += 3
 
 			registers[r1] += registers[r2]
 		case Sub:
-			r1 := memory[pc+1]
-			r2 := memory[pc+2]
+			r1, r2 := memory[pc+1], memory[pc+2]
 
 			registers[ProgramCounter] += 3
 
 			registers[r1] -= registers[r2]
 		case Addi:
-			r1 := memory[pc+1]
-			val := memory[pc+2]
+			r1, val := memory[pc+1], memory[pc+2]
 
 			registers[ProgramCounter] += 3
 
 			registers[r1] += val
 		case Subi:
-			r1 := memory[pc+1]
-			val := memory[pc+2]
+			r1, val := memory[pc+1], memory[pc+2]
 
 			registers[ProgramCounter] += 3
 
@@ -87,8 +81,7 @@ func compute(memory []byte) {
 
 			registers[ProgramCounter] = addr
 		case Beqz:
-			r1 := memory[pc+1]
-			offset := memory[pc+2]
+			r1, offset := memory[pc+1], memory[pc+2]
 
 			registers[ProgramCounter] += 3
 
