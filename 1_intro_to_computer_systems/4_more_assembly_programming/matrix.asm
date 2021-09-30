@@ -11,4 +11,4 @@ index:
   imul edx, ecx ; cols * rindex
   add edx, r8d ; + cindex
   mov eax, dword [rdi + rdx * 4] ; base + offset * 4
-	ret
+  ret

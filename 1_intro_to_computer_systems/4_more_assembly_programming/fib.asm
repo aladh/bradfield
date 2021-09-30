@@ -22,7 +22,7 @@ fib:
 
   pop rbx ; restore rbx
   pop rdi ; restore n
-	ret
+  ret
 .base_case:
   mov rax, rdi ; return n
   ret
