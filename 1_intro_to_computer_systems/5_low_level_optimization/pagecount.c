@@ -9,7 +9,7 @@ uint64_t pagecount(uint64_t memory_size, uint64_t page_size) {
   // shift right by the index of the least significant set bit of page_size
   // if page_size is 0x04, shift right by 2, which is the same as dividing by 4
   // this is equivalent to memory_size / page_size, but >10x faster without division
-  return memory_size >> (__builtin_ctz(page_size));
+  return memory_size >> __builtin_ctz(page_size);
 }
 
 int main (int argc, char** argv) {
