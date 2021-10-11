@@ -44,3 +44,12 @@ BenchmarkMetrics/Payment_stddev-4            126           9053286 ns/op
 PASS
 ok      example.com     6.980s
 ```
+
+### Use primitive value instead of payment struct
+```
+BenchmarkMetrics/Average_age-4             19519             62083 ns/op
+BenchmarkMetrics/Average_payment-4           210           5758736 ns/op (1.1x faster)
+BenchmarkMetrics/Payment_stddev-4            176           6860588 ns/op (1.3x faster)
+PASS
+ok      example.com     5.893s
+```

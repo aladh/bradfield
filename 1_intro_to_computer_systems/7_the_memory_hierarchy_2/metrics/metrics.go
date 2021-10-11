@@ -6,21 +6,11 @@ import (
 	"math"
 	"os"
 	"strconv"
-	"time"
 )
 
 type UserData struct {
 	Ages     []uint8
-	Payments []Payment
-}
-
-type DollarAmount struct {
-	dollars, cents uint64
-}
-
-type Payment struct {
-	amount DollarAmount
-	time   time.Time
+	Payments []uint32
 }
 
 func AverageAge(ages []uint8) float64 {
@@ -40,27 +30,27 @@ func AverageAge(ages []uint8) float64 {
 	return average0 + average1
 }
 
-func AveragePaymentAmount(payments []Payment) float64 {
+func AveragePaymentAmount(payments []uint32) float64 {
 	average, count := 0.0, 0.0
 	for _, p := range payments {
 		count += 1
-		amount := float64(p.amount.dollars) + float64(p.amount.cents)/100
+		amount := float64(p)
 		average += (amount - average) / count
 	}
-	return average
+	return average * 0.01
 }
 
 // Compute the standard deviation of payment amounts
-func StdDevPaymentAmount(payments []Payment) float64 {
-	mean := AveragePaymentAmount(payments)
+func StdDevPaymentAmount(payments []uint32) float64 {
+	mean := AveragePaymentAmount(payments) * 100
 	squaredDiffs, count := 0.0, 0.0
 	for _, p := range payments {
 		count += 1
-		amount := float64(p.amount.dollars) + float64(p.amount.cents)/100
+		amount := float64(p)
 		diff := amount - mean
 		squaredDiffs += diff * diff
 	}
-	return math.Sqrt(squaredDiffs / count)
+	return math.Sqrt(squaredDiffs/count) * 0.01
 }
 
 func LoadData() UserData {
@@ -90,14 +80,10 @@ func LoadData() UserData {
 		log.Fatalln("Unable to parse payments.csv as csv", err)
 	}
 
-	payments := make([]Payment, len(paymentLines))
+	payments := make([]uint32, len(paymentLines))
 	for i, line := range paymentLines {
 		paymentCents, _ := strconv.Atoi(line[0])
-		datetime, _ := time.Parse(time.RFC3339, line[1])
-		payments[i] = Payment{
-			DollarAmount{uint64(paymentCents / 100), uint64(paymentCents % 100)},
-			datetime,
-		}
+		payments[i] = uint32(paymentCents)
 	}
 
 	return UserData{Ages: ages, Payments: payments}
