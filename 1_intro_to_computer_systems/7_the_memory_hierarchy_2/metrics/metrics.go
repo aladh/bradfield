@@ -31,12 +31,13 @@ func AverageAge(ages []uint8) float64 {
 }
 
 func AveragePaymentAmount(payments []uint32) float64 {
-	average, count := 0.0, 0.0
+	average := 0.0
+	weight := 1.0 / float64(len(payments))
+
 	for _, p := range payments {
-		count += 1
-		amount := float64(p)
-		average += (amount - average) / count
+		average += float64(p) * weight
 	}
+
 	return average * 0.01
 }
 

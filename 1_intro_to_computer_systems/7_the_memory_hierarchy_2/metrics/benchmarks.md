@@ -53,3 +53,12 @@ BenchmarkMetrics/Payment_stddev-4            176           6860588 ns/op (1.3x f
 PASS
 ok      example.com     5.893s
 ```
+
+### Incrementally compute average payment amount
+```
+BenchmarkMetrics/Average_age-4             19333             62614 ns/op
+BenchmarkMetrics/Average_payment-4          1140           1048805 ns/op (5.5x faster)
+BenchmarkMetrics/Payment_stddev-4            572           2108189 ns/op (3.3x faster)
+PASS
+ok      example.com     4.953s
+```
