@@ -10,11 +10,19 @@ ok      example.com     6.281s
 ```
 
 ### Store all payments in a single array
-
 ```
 BenchmarkMetrics/Average_age-4               338           3564686 ns/op
 BenchmarkMetrics/Average_payment-4           198           6018441 ns/op (79% faster)
 BenchmarkMetrics/Payment_stddev-4            135           8814534 ns/op (84% faster)
 PASS
 ok      example.com     6.710s
+```
+
+### Store ages in an array
+```
+BenchmarkMetrics/Average_age-4              2132            571574 ns/op (84% faster)
+BenchmarkMetrics/Average_payment-4           194           6032774 ns/op
+BenchmarkMetrics/Payment_stddev-4            134           8766550 ns/op
+PASS
+ok      example.com     6.322s
 ```

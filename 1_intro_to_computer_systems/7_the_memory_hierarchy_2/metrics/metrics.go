@@ -9,17 +9,9 @@ import (
 	"time"
 )
 
-type UserId int
-type UserMap map[UserId]*User
-
 type UserData struct {
-	Users    UserMap
+	Ages     []uint8
 	Payments []Payment
-}
-
-type Address struct {
-	fullAddress string
-	zip         int
 }
 
 type DollarAmount struct {
@@ -31,19 +23,11 @@ type Payment struct {
 	time   time.Time
 }
 
-type User struct {
-	id       UserId
-	name     string
-	age      int
-	address  Address
-	payments []Payment
-}
-
-func AverageAge(users UserMap) float64 {
+func AverageAge(ages []uint8) float64 {
 	average, count := 0.0, 0.0
-	for _, u := range users {
+	for _, age := range ages {
 		count += 1
-		average += (float64(u.age) - average) / count
+		average += (float64(age) - average) / count
 	}
 	return average
 }
@@ -82,14 +66,10 @@ func LoadData() UserData {
 		log.Fatalln("Unable to parse users.csv as csv", err)
 	}
 
-	users := make(UserMap, len(userLines))
-	for _, line := range userLines {
-		id, _ := strconv.Atoi(line[0])
-		name := line[1]
+	ages := make([]uint8, len(userLines))
+	for i, line := range userLines {
 		age, _ := strconv.Atoi(line[2])
-		address := line[3]
-		zip, _ := strconv.Atoi(line[3])
-		users[UserId(id)] = &User{UserId(id), name, age, Address{address, zip}, []Payment{}}
+		ages[i] = uint8(age)
 	}
 
 	f, err = os.Open("payments.csv")
@@ -112,5 +92,5 @@ func LoadData() UserData {
 		}
 	}
 
-	return UserData{Users: users, Payments: payments}
+	return UserData{Ages: ages, Payments: payments}
 }
