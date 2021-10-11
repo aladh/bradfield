@@ -31,14 +31,20 @@ func AverageAge(ages []uint8) float64 {
 }
 
 func AveragePaymentAmount(payments []uint32) float64 {
-	average := 0.0
+	average0, average1 := 0.0, 0.0
 	weight := 1.0 / float64(len(payments))
+	i := 0
 
-	for _, p := range payments {
-		average += float64(p) * weight
+	for i = 0; i < len(payments)-1; i += 2 {
+		average0 += float64(payments[i]) * weight
+		average1 += float64(payments[i+1]) * weight
 	}
 
-	return average * 0.01
+	for _ = i; i < len(payments); i++ {
+		average0 += float64(payments[i]) * weight
+	}
+
+	return (average0 + average1) * 0.01
 }
 
 // Compute the standard deviation of payment amounts
