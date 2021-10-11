@@ -24,14 +24,20 @@ type Payment struct {
 }
 
 func AverageAge(ages []uint8) float64 {
-	average := 0.0
+	average0, average1 := 0.0, 0.0
 	weight := 1.0 / float64(len(ages))
+	i := 0
 
-	for _, age := range ages {
-		average += float64(age) * weight
+	for i = 0; i < len(ages)-1; i += 2 {
+		average0 += float64(ages[i]) * weight
+		average1 += float64(ages[i+1]) * weight
 	}
 
-	return average
+	for _ = i; i < len(ages); i++ {
+		average0 += float64(ages[i]) * weight
+	}
+
+	return average0 + average1
 }
 
 func AveragePaymentAmount(payments []Payment) float64 {

@@ -35,3 +35,12 @@ BenchmarkMetrics/Payment_stddev-4            135           8847441 ns/op
 PASS
 ok      example.com     6.139s
 ```
+
+### 2x2 loop unrolling for average age
+```
+BenchmarkMetrics/Average_age-4             19341             61916 ns/op (1.7x faster)
+BenchmarkMetrics/Average_payment-4           194           6290909 ns/op
+BenchmarkMetrics/Payment_stddev-4            126           9053286 ns/op
+PASS
+ok      example.com     6.980s
+```
