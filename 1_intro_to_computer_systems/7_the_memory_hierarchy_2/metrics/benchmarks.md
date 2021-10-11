@@ -9,4 +9,12 @@ PASS
 ok      example.com     6.281s
 ```
 
+### Store all payments in a single array
 
+```
+BenchmarkMetrics/Average_age-4               338           3564686 ns/op
+BenchmarkMetrics/Average_payment-4           198           6018441 ns/op (79% faster)
+BenchmarkMetrics/Payment_stddev-4            135           8814534 ns/op (84% faster)
+PASS
+ok      example.com     6.710s
+```

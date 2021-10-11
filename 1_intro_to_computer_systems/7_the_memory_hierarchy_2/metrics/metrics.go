@@ -12,6 +12,11 @@ import (
 type UserId int
 type UserMap map[UserId]*User
 
+type UserData struct {
+	Users    UserMap
+	Payments []Payment
+}
+
 type Address struct {
 	fullAddress string
 	zip         int
@@ -43,34 +48,30 @@ func AverageAge(users UserMap) float64 {
 	return average
 }
 
-func AveragePaymentAmount(users UserMap) float64 {
+func AveragePaymentAmount(payments []Payment) float64 {
 	average, count := 0.0, 0.0
-	for _, u := range users {
-		for _, p := range u.payments {
-			count += 1
-			amount := float64(p.amount.dollars) + float64(p.amount.cents)/100
-			average += (amount - average) / count
-		}
+	for _, p := range payments {
+		count += 1
+		amount := float64(p.amount.dollars) + float64(p.amount.cents)/100
+		average += (amount - average) / count
 	}
 	return average
 }
 
 // Compute the standard deviation of payment amounts
-func StdDevPaymentAmount(users UserMap) float64 {
-	mean := AveragePaymentAmount(users)
+func StdDevPaymentAmount(payments []Payment) float64 {
+	mean := AveragePaymentAmount(payments)
 	squaredDiffs, count := 0.0, 0.0
-	for _, u := range users {
-		for _, p := range u.payments {
-			count += 1
-			amount := float64(p.amount.dollars) + float64(p.amount.cents)/100
-			diff := amount - mean
-			squaredDiffs += diff * diff
-		}
+	for _, p := range payments {
+		count += 1
+		amount := float64(p.amount.dollars) + float64(p.amount.cents)/100
+		diff := amount - mean
+		squaredDiffs += diff * diff
 	}
 	return math.Sqrt(squaredDiffs / count)
 }
 
-func LoadData() UserMap {
+func LoadData() UserData {
 	f, err := os.Open("users.csv")
 	if err != nil {
 		log.Fatalln("Unable to read users.csv", err)
@@ -101,15 +102,15 @@ func LoadData() UserMap {
 		log.Fatalln("Unable to parse payments.csv as csv", err)
 	}
 
-	for _, line := range paymentLines {
-		userId, _ := strconv.Atoi(line[2])
+	payments := make([]Payment, len(paymentLines))
+	for i, line := range paymentLines {
 		paymentCents, _ := strconv.Atoi(line[0])
 		datetime, _ := time.Parse(time.RFC3339, line[1])
-		users[UserId(userId)].payments = append(users[UserId(userId)].payments, Payment{
+		payments[i] = Payment{
 			DollarAmount{uint64(paymentCents / 100), uint64(paymentCents % 100)},
 			datetime,
-		})
+		}
 	}
 
-	return users
+	return UserData{Users: users, Payments: payments}
 }
