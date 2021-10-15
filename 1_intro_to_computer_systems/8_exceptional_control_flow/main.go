@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"flag"
 	"fmt"
 	"os"
@@ -41,25 +42,10 @@ func main() {
 
 func runCommand(input string) {
 	splitCommand := strings.Split(input, inputSeparator)
-	command := splitCommand[0]
-	var commandPath string
-
-	pathLocations := strings.Split(os.Getenv(pathEnvVar), pathSeparator)
-	for _, dir := range pathLocations {
-		entries, err := os.ReadDir(dir)
-		if err != nil {
-			fmt.Printf("error reading PATH directory: %s\n", err)
-		}
-
-		for _, entry := range entries {
-			if !entry.IsDir() && entry.Name() == command {
-				commandPath = path.Join(dir, entry.Name())
-			}
-		}
-	}
-
-	if len(commandPath) == 0 {
-		fmt.Printf("%s: command not found\n", command)
+	commandName := splitCommand[0]
+	commandPath, err := findCommand(commandName)
+	if err != nil {
+		fmt.Println(err)
 		return
 	}
 
@@ -79,4 +65,22 @@ func runCommand(input string) {
 	if err != nil {
 		fmt.Printf("error waiting for subprocess: %s\n", err)
 	}
+}
+
+func findCommand(command string) (string, error) {
+	pathLocations := strings.Split(os.Getenv(pathEnvVar), pathSeparator)
+	for _, dir := range pathLocations {
+		entries, err := os.ReadDir(dir)
+		if err != nil {
+			fmt.Printf("error reading PATH directory: %s\n", err)
+		}
+
+		for _, entry := range entries {
+			if !entry.IsDir() && entry.Name() == command {
+				return path.Join(dir, entry.Name()), nil
+			}
+		}
+	}
+
+	return "", errors.New(fmt.Sprintf("%s: command not found\n", command))
 }
