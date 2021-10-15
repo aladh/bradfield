@@ -5,10 +5,15 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path"
+	"strings"
 )
 
 const prompt = "⛄  "
 const exitMessage = "❄❅❄❅ Goodbye and stay warm! ❄❅❄❅"
+const pathEnvVar = "PATH"
+const pathSeparator = ":"
+const inputSeparator = " "
 
 func main() {
 	var command string
@@ -34,6 +39,44 @@ func main() {
 	}
 }
 
-func runCommand(command string) {
-	fmt.Println(command)
+func runCommand(input string) {
+	splitCommand := strings.Split(input, inputSeparator)
+	command := splitCommand[0]
+	var commandPath string
+
+	pathLocations := strings.Split(os.Getenv(pathEnvVar), pathSeparator)
+	for _, dir := range pathLocations {
+		entries, err := os.ReadDir(dir)
+		if err != nil {
+			fmt.Printf("error reading PATH directory: %s\n", err)
+		}
+
+		for _, entry := range entries {
+			if !entry.IsDir() && entry.Name() == command {
+				commandPath = path.Join(dir, entry.Name())
+			}
+		}
+	}
+
+	if len(commandPath) == 0 {
+		fmt.Printf("%s: command not found\n", command)
+		return
+	}
+
+	attrs := os.ProcAttr{
+		Dir:   "",
+		Env:   nil,
+		Files: []*os.File{os.Stdin, os.Stdout, os.Stderr},
+		Sys:   nil,
+	}
+
+	process, err := os.StartProcess(commandPath, splitCommand, &attrs)
+	if err != nil {
+		fmt.Printf("error running subprocess: %s\n", err)
+	}
+
+	_, err = process.Wait()
+	if err != nil {
+		fmt.Printf("error waiting for subprocess: %s\n", err)
+	}
 }
