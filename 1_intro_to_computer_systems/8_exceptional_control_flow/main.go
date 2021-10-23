@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"os/signal"
 	"strings"
 )
 
@@ -14,7 +15,11 @@ const exitMessage = "❄❅❄❅ Goodbye and stay warm! ❄❅❄❅"
 const inputSeparator = " "
 const exitCommand = "exit"
 
+var interruptChan = make(chan os.Signal, 1)
+
 func main() {
+	signal.Notify(interruptChan, os.Interrupt)
+
 	var command string
 	flag.StringVar(&command, "c", "", "Run a command and exit")
 	flag.Parse()
@@ -68,8 +73,25 @@ func runCommand(input string) {
 		fmt.Printf("error running subprocess: %s\n", err)
 	}
 
+	doneChan := make(chan bool, 1)
+	go forwardInterrupt(process, doneChan)
+
 	_, err = process.Wait()
 	if err != nil {
 		fmt.Printf("error waiting for subprocess: %s\n", err)
+	}
+
+	doneChan <- true
+}
+
+func forwardInterrupt(process *os.Process, doneChan <-chan bool) {
+	select {
+	case <-interruptChan:
+		err := process.Signal(os.Interrupt)
+		if err != nil {
+			fmt.Printf("error signalling subprocess: %s\n", err)
+		}
+	case <-doneChan:
+		break
 	}
 }
