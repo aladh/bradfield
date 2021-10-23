@@ -12,6 +12,7 @@ import (
 const prompt = "⛄  "
 const exitMessage = "❄❅❄❅ Goodbye and stay warm! ❄❅❄❅"
 const inputSeparator = " "
+const exitCommand = "exit"
 
 func main() {
 	var command string
@@ -25,16 +26,25 @@ func main() {
 
 	scanner := bufio.NewScanner(os.Stdin)
 
+CommandLoop:
 	for {
 		fmt.Print(prompt)
 
 		if ok := scanner.Scan(); !ok {
-			fmt.Println(exitMessage)
 			break
 		}
 
-		runCommand(scanner.Text())
+		input := scanner.Text()
+
+		switch input {
+		case exitCommand:
+			break CommandLoop
+		default:
+			runCommand(input)
+		}
 	}
+
+	fmt.Println(exitMessage)
 }
 
 func runCommand(input string) {
