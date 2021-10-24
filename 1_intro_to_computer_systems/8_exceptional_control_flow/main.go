@@ -91,6 +91,7 @@ func forwardInterrupt(process *os.Process, doneChan <-chan bool) {
 		if err != nil {
 			fmt.Printf("error signalling subprocess: %s\n", err)
 		}
+		fmt.Println() // Add newline after ^C
 	case <-doneChan:
 		break
 	}
