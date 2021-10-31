@@ -7,6 +7,5 @@ type atomicService struct {
 }
 
 func (s *atomicService) getNext() uint64 {
-	atomic.AddUint64(&s.id, 1)
-	return s.id
+	return atomic.AddUint64(&s.id, 1)
 }

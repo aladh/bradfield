@@ -13,7 +13,7 @@ type idService interface {
 
 func main() {
 	test("noSyncService", &noSyncService{})         // race + sometimes not monotonic + final value too small
-	test("atomicService", &atomicService{})         // race but produces correct final value
+	test("atomicService", &atomicService{})         // no race
 	test("mutexService", &mutexService{})           // no race
 	test("goroutineService", newGoroutineService()) // no race
 }
