@@ -19,9 +19,6 @@ func newDbService(connection string) *dbService {
 }
 
 func (d *dbService) logState() {
-	d.lock.RLock()
-	defer d.lock.RUnlock()
-
 	fmt.Printf("connection %q is healthy\n", d.connection)
 }
 
@@ -44,6 +41,7 @@ func (d *dbService) updateConnection(connection string) {
 	d.connection = connection
 }
 
+// Removed lock from logState because takeSnapshot already acquires a lock
 func main() {
 	d := newDbService("127.0.0.1:3001")
 

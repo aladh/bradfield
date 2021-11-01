@@ -5,7 +5,8 @@ import (
 )
 
 func main() {
-	done := make(chan struct{}, 1)
+	// Make the channel unbuffered so sending blocks the main goroutine until the other goroutine is finished
+	done := make(chan struct{})
 	go func() {
 		fmt.Println("performing initialization...")
 		<-done

@@ -14,8 +14,10 @@ func main() {
 	}
 	var wg sync.WaitGroup
 	for i := range urls {
+		// Add to waitgroup outside goroutine to avoid racing with wg.wait
+		wg.Add(1)
+
 		go func(i int) {
-			wg.Add(1)
 			// Decrement the counter when the goroutine completes.
 			defer wg.Done()
 

@@ -18,10 +18,14 @@ func newCoordinator(leader string) *coordinator {
 }
 
 func (c *coordinator) logState() {
+	fmt.Printf("leader = %q\n", c.leader)
+}
+
+func (c *coordinator) logStateWithLock() {
 	c.lock.RLock()
 	defer c.lock.RUnlock()
 
-	fmt.Printf("leader = %q\n", c.leader)
+	c.logState()
 }
 
 func (c *coordinator) setLeader(leader string, shouldLog bool) {
@@ -36,7 +40,9 @@ func (c *coordinator) setLeader(leader string, shouldLog bool) {
 }
 
 func main() {
+	// A deadlock occurred when setLeader called logState because
+	// setLeader was holding a lock and logState also tried to acquire a lock
 	c := newCoordinator("us-east")
-	c.logState()
+	c.logStateWithLock()
 	c.setLeader("us-west", true)
 }

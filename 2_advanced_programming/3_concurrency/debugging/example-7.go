@@ -14,7 +14,7 @@ type counter struct {
 	count int
 }
 
-func safeIncrement(lock sync.Mutex, c *counter) {
+func safeIncrement(lock *sync.Mutex, c *counter) {
 	lock.Lock()
 	defer lock.Unlock()
 
@@ -34,7 +34,8 @@ func main() {
 			defer wg.Done()
 
 			for j := 0; j < numIncrements; j++ {
-				safeIncrement(globalLock, c)
+				// Mutex was being passed by value, which made it useless and cased a race condition
+				safeIncrement(&globalLock, c)
 			}
 		}()
 	}

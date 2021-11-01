@@ -7,7 +7,8 @@ import (
 const numTasks = 3
 
 func main() {
-	var done chan struct{}
+	// Buffer channel so goroutines aren't blocked
+	done := make(chan struct{}, numTasks)
 	for i := 0; i < numTasks; i++ {
 		go func() {
 			fmt.Println("running task...")

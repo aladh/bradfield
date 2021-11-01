@@ -14,6 +14,8 @@ func main() {
 		defer wg.Done()
 
 		c := s.GetConsumer(0)
+
+		// Lock state before consumer to avoid deadlocking with s.PrintSate
 		c.Terminate()
 	}()
 
