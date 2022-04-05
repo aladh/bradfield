@@ -17,6 +17,7 @@ func newCoordinator(leader string) *coordinator {
 	}
 }
 
+// Assumes c.lock is already acquired
 func (c *coordinator) logState() {
 	fmt.Printf("leader = %q\n", c.leader)
 }

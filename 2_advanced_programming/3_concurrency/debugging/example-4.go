@@ -12,6 +12,6 @@ func main() {
 		<-done
 	}()
 
-	done <- struct{}{}
+	done <- struct{}{} // swap this with the one inside the goroutine, no need to make it unbuffered
 	fmt.Println("initialization done, continuing with rest of program")
 }
