@@ -36,49 +36,55 @@ func main() {
 
 	for {
 		conn, err := l.Accept()
-		defer conn.Close()
 		if err != nil {
-			log.Printf("error getting connection: %s\n", err)
+			log.Printf("error accepting connection: %s\n", err)
+			continue
 		}
 
-		scanner := bufio.NewScanner(conn)
-		for scanner.Scan() {
-			message := scanner.Text()
-			log.Printf("received message: %s\n", message)
+		go handleConn(conn, kv)
+	}
+}
 
-			var command string
-			var arg string
+func handleConn(conn net.Conn, kv *kvdata.KVData) {
+	scanner := bufio.NewScanner(conn)
+	for scanner.Scan() {
+		message := scanner.Text()
+		log.Printf("received message: %s\n", message)
 
-			_, err = fmt.Sscanf(message, "%s %s", &command, &arg)
+		var command string
+		var arg string
+
+		_, err := fmt.Sscanf(message, "%s %s", &command, &arg)
+		if err != nil {
+			log.Fatalf("error reading message: %s\n", err)
+		}
+
+		switch command {
+		case commands.GetCommand:
+			val := kv.Get(arg)
+			resp := fmt.Sprintf("%s\n", val)
+
+			_, err = conn.Write([]byte(resp))
 			if err != nil {
-				log.Fatalf("error reading message: %s\n", err)
+				log.Printf("error writing to connection: %s\n", err)
+			}
+		case commands.SetCommand:
+			splitArg := strings.Split(arg, "=")
+			resp := "OK\n"
+
+			err := kv.Set(splitArg[0], splitArg[1])
+			if err != nil {
+				e := fmt.Sprintf("error setting value: %s\n", err)
+				log.Print(e)
+				resp = e
 			}
 
-			switch command {
-			case commands.GetCommand:
-				val := kv.Get(arg)
-				resp := fmt.Sprintf("%s\n", val)
-
-				_, err = conn.Write([]byte(resp))
-				if err != nil {
-					log.Printf("error writing to connection: %s\n", err)
-				}
-			case commands.SetCommand:
-				splitArg := strings.Split(arg, "=")
-				resp := "OK\n"
-
-				err := kv.Set(splitArg[0], splitArg[1])
-				if err != nil {
-					e := fmt.Sprintf("error setting value: %s\n", err)
-					log.Print(e)
-					resp = e
-				}
-
-				_, err = conn.Write([]byte(resp))
-				if err != nil {
-					log.Printf("error writing to connection: %s\n", err)
-				}
+			_, err = conn.Write([]byte(resp))
+			if err != nil {
+				log.Printf("error writing to connection: %s\n", err)
 			}
 		}
 	}
+
+	conn.Close()
 }
