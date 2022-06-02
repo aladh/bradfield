@@ -5,11 +5,9 @@ import (
 	"log"
 	"strings"
 
+	"kv_store/commands"
 	"kv_store/kvdata"
 )
-
-const getCommand = "get"
-const setCommand = "set"
 
 func main() {
 	var command string
@@ -28,15 +26,15 @@ func main() {
 			log.Fatalf("error reading input: %s\n", err)
 		}
 
-		if command != getCommand && command != setCommand {
+		if command != commands.GetCommand && command != commands.SetCommand {
 			fmt.Printf("invalid command: %s\n", command)
 			continue
 		}
 
 		switch command {
-		case getCommand:
+		case commands.GetCommand:
 			fmt.Println(kv.Get(arg))
-		case setCommand:
+		case commands.SetCommand:
 			splitArg := strings.Split(arg, "=")
 			err := kv.Set(splitArg[0], splitArg[1])
 			if err != nil {
