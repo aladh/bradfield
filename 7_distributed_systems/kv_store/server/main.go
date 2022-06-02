@@ -20,12 +20,11 @@ func main() {
 		log.Fatalf("error initializing data: %s\n", err)
 	}
 
-	wd, err := os.Getwd()
+	sockAddr, err := SockAddr()
 	if err != nil {
-		log.Fatalf("error getting working directory: %s\n", err)
+		log.Fatalf("error getting socket address: %s\n", err)
 	}
 
-	sockAddr := fmt.Sprintf("%s/%s", wd, sockName)
 	_ = os.Remove(sockAddr)
 	l, err := net.Listen("unix", sockAddr)
 	defer l.Close()
@@ -44,6 +43,15 @@ func main() {
 
 		go handleConn(conn, kv)
 	}
+}
+
+func SockAddr() (string, error) {
+	wd, err := os.Getwd()
+	if err != nil {
+		return "", fmt.Errorf("error getting working directory: %s", err)
+	}
+
+	return fmt.Sprintf("%s/%s", wd, sockName), nil
 }
 
 func handleConn(conn net.Conn, kv *kvdata.KVData) {

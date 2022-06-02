@@ -1,21 +1,29 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"log"
-	"strings"
+	"net"
+	"os"
 
 	"kv_store/commands"
-	"kv_store/kvdata"
 )
+
+const sockName = "server.sock"
 
 func main() {
 	var command string
 	var arg string
 
-	kv, err := kvdata.Initialize()
+	sockAddr, err := SockAddr()
 	if err != nil {
-		log.Fatalf("error initializing data: %s\n", err)
+		log.Fatalf("error getting socket address: %s\n", err)
+	}
+
+	conn, err := net.Dial("unix", sockAddr)
+	if err != nil {
+		log.Fatalf("error connecting to server: %s\n", err)
 	}
 
 	for {
@@ -31,15 +39,27 @@ func main() {
 			continue
 		}
 
-		switch command {
-		case commands.GetCommand:
-			fmt.Println(kv.Get(arg))
-		case commands.SetCommand:
-			splitArg := strings.Split(arg, "=")
-			err := kv.Set(splitArg[0], splitArg[1])
-			if err != nil {
-				log.Printf("error setting value: %s\n", err)
-			}
+		message := fmt.Sprintf("%s %s\n", command, arg)
+		_, err = conn.Write([]byte(message))
+		if err != nil {
+			log.Fatalf("error writing to connection: %s\n", err)
 		}
+
+		reader := bufio.NewReader(conn)
+		resp, err := reader.ReadString('\n')
+		if err != nil {
+			log.Fatalf("error reading from connection: %s\n", err)
+		}
+
+		fmt.Print(resp)
 	}
+}
+
+func SockAddr() (string, error) {
+	wd, err := os.Getwd()
+	if err != nil {
+		return "", fmt.Errorf("error getting working directory: %s", err)
+	}
+
+	return fmt.Sprintf("%s/%s", wd, sockName), nil
 }
