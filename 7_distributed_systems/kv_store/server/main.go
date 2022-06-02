@@ -26,6 +26,7 @@ func main() {
 	}
 
 	sockAddr := fmt.Sprintf("%s/%s", wd, sockName)
+	_ = os.Remove(sockAddr)
 	l, err := net.Listen("unix", sockAddr)
 	defer l.Close()
 	if err != nil {
