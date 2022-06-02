@@ -4,15 +4,18 @@ import (
 	"fmt"
 	"log"
 	"strings"
+
+	"kv_store/kvdata"
 )
 
 const GetCommand = "get"
 const SetCommand = "set"
 
 func main() {
-	data := make(map[string]string)
 	var command string
 	var arg string
+
+	kv := kvdata.LoadOrInitialize()
 
 	for {
 		fmt.Print("Enter a command: ")
@@ -29,10 +32,10 @@ func main() {
 
 		switch command {
 		case GetCommand:
-			fmt.Println(data[arg])
+			fmt.Println(kv.Get(arg))
 		case SetCommand:
 			splitArg := strings.Split(arg, "=")
-			data[splitArg[0]] = splitArg[1]
+			kv.Set(splitArg[0], splitArg[1])
 		}
 	}
 }
