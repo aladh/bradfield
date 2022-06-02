@@ -8,14 +8,17 @@ import (
 	"kv_store/kvdata"
 )
 
-const GetCommand = "get"
-const SetCommand = "set"
+const getCommand = "get"
+const setCommand = "set"
 
 func main() {
 	var command string
 	var arg string
 
-	kv := kvdata.LoadOrInitialize()
+	kv, err := kvdata.Initialize()
+	if err != nil {
+		log.Fatalf("error initializing data: %s\n", err)
+	}
 
 	for {
 		fmt.Print("Enter a command: ")
@@ -25,17 +28,20 @@ func main() {
 			log.Fatalf("error reading input: %s\n", err)
 		}
 
-		if command != GetCommand && command != SetCommand {
+		if command != getCommand && command != setCommand {
 			fmt.Printf("invalid command: %s\n", command)
 			continue
 		}
 
 		switch command {
-		case GetCommand:
+		case getCommand:
 			fmt.Println(kv.Get(arg))
-		case SetCommand:
+		case setCommand:
 			splitArg := strings.Split(arg, "=")
-			kv.Set(splitArg[0], splitArg[1])
+			err := kv.Set(splitArg[0], splitArg[1])
+			if err != nil {
+				log.Printf("error setting value: %s\n", err)
+			}
 		}
 	}
 }
